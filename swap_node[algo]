@@ -1,0 +1,98 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+struct node
+{
+    node *right,*left;
+    int data;
+};
+vector<int> arr;
+void in_order(node *root)
+{
+    if(root==NULL)  return ;
+    in_order(root->left);
+    if(root->data!=-1)  cout<<root->data<<" ";
+    in_order(root->right);
+}
+node *newNode(int k)
+{
+    node *temp=new node();
+    temp->data=k;
+    temp->left=NULL;
+    temp->right=NULL;
+    return temp;
+}
+node* insertLevelOrder(node *root,int i,int n)
+{
+    if(i<n)
+    {
+        node *temp=newNode(arr[i]);
+        root=temp;
+        root->left = insertLevelOrder(root->left, 2 * i + 1, n);
+        root->right = insertLevelOrder(root->right, 2 * i + 2, n);
+    }
+    return root;
+}
+node* to_level(int level,node *root_ref)
+{
+    if(level>1)
+    {
+       return to_level(level-1,root_ref->left);
+        return to_level(level-1,root_ref->right);
+    }   
+    return root_ref;
+      
+}
+void node_swap(int level,node *root_ref)
+{
+    node *root=to_level(level,root_ref);
+    node *temp;
+    if(root->right==NULL && root->left==NULL)   return ;
+    if(root->right==NULL)
+    {
+        root->right=root->left;
+        root->left=NULL;
+        return ;
+    }
+    if(root->left==NULL)
+    {
+        root->left=root->right;
+        root->right=NULL;
+        return ;
+    }
+    temp=root->right;
+    root->right=root->left;
+    root->left=temp;
+    return ;
+}
+int main() {
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
+    int n;
+    cin>>n;
+    int t=(2*n)+1;
+    arr.push_back(1);
+    int a,b;
+    for(int i=0;i<n;i++)
+    {
+        cin>>a>>b;
+        arr.push_back(a);
+        arr.push_back(b);
+    }
+    int s=arr.size();
+    node* root = insertLevelOrder(root, 0, s);
+    int k;
+    cin>>k;
+    // cout<<endl;    
+    for(int i=0;i<k;i++)
+    {
+        int l;
+        cin>>l;
+        node_swap(l,root);
+        in_order(root); 
+        cout<<endl;
+    }
+    return 0;
+}
